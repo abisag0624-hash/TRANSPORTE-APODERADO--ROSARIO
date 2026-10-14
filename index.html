@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRANSPORTE APODERADO / ROSARIO</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #ffd1dc, #e0bbe4, #957dad, #d4f0f0);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #2c3e50;
+            --primary: #8a4af3;
+            --accent: #ff6f91;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            color: #4a3f55;
+            margin: 5px 0 15px 0;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .route-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #6c5b7b;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .live-clock {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 5px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .date-display {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-transform: capitalize;
+        }
+
+        /* Pestañas */
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            padding: 4px;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #777;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        /* Tarjeta Principal de Próximo Horario */
+        .next-bus-card {
+            background: linear-gradient(135deg, #ffffff, #f8f4ff);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid #e2d4f8;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge {
+            background: #ffe3ed;
+            color: #d81b60;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .next-time {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 5px 0;
+            line-height: 1;
+        }
+
+        .countdown {
+            font-size: 0.95rem;
+            color: #555;
+            font-weight: 600;
+            background: #f0e6ff;
+            padding: 6px 14px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        /* Contenedor de Listas */
+        .schedule-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #4a3f55;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .schedule-item {
+            background: #fff;
+            padding: 10px 5px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #444;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            border: 1px solid #f0f0f0;
+            transition: all 0.2s;
+        }
+
+        .schedule-item.highlight {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(138, 74, 243, 0.3);
+        }
+
+        .schedule-item.passed {
+            opacity: 0.4;
+            background: #f7f7f7;
+        }
+
+        /* Mensaje del día */
+        .message-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            text-align: center;
+        }
+
+        .message-title {
+            color: #2e7d32;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .message-body {
+            font-style: italic;
+            color: #444;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Cabecera -->
+        <div class="header-card">
+            <h1>🚌 TRANSPORTE APODERADO / ROSARIO 🚍</h1>
+            <div class="route-subtitle" id="routeIndicator">APODERADO ⇄ ROSARIO</div>
+            <div class="live-clock" id="liveClock">00:00:00</div>
+            <div class="date-display" id="dateDisplay">Cargando fecha...</div>
+
+            <!-- Botones de Pestañas -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchRoute('apoderado')" id="btnApoderado">Apoderado</button>
+                <button class="tab-btn" onclick="switchRoute('rosario')" id="btnRosario">Rosario</button>
+            </div>
+        </div>
+
+        <!-- Tarjeta Próximo Horario -->
+        <div class="next-bus-card">
+            <div class="badge">Próximo Salida</div>
+            <div class="next-time" id="nextTimeDisplay">--:--</div>
+            <div class="countdown" id="countdownDisplay">Calculando tiempo...</div>
+        </div>
+
+        <!-- Lista de todos los horarios -->
+        <div class="schedule-section">
+            <div class="section-title">
+                <span id="listTitle">Horarios de Apoderado</span>
+                <span style="font-size: 0.8rem; font-weight: normal; color: #777;" id="totalCount"></span>
+            </div>
+            <div class="schedule-grid" id="scheduleGrid">
+                <!-- Se llena mediante JS -->
+            </div>
+        </div>
+
+        <!-- Mensaje del Día -->
+        <div class="message-card">
+            <div class="message-title">✨ MENSAJE DEL DÍA</div>
+            <div class="message-body" id="dailyMessage">"Puedes caminar con confianza porque Dios está contigo y cuida tus pasos."</div>
+        </div>
+    </div>
+
+    <script>
+        const schedules = {
+            apoderado: [
+                "06:00", "07:00", "07:25", "08:45", "09:35", 
+                "10:00", "11:05", "11:55", "12:20", "13:25", 
+                "14:15", "14:40", "15:45", "16:35", "17:00"
+            ],
+            rosario: [
+                "07:00", "08:00", "08:25", "09:45", "10:35", 
+                "11:00", "12:05", "12:55", "13:20", "14:25", 
+                "15:15", "15:40", "16:45", "17:35", "18:00"
+            ]
+        };
+
+        let currentRoute = 'apoderado';
+
+        function switchRoute(route) {
+            currentRoute = route;
+            document.getElementById('btnApoderado').classList.toggle('active', route === 'apoderado');
+            document.getElementById('btnRosario').classList.toggle('active', route === 'rosario');
+            
+            document.getElementById('listTitle').innerText = route === 'apoderado' ? 'Horarios de Apoderado' : 'Horarios de Rosario';
+            updateApp();
+        }
+
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function updateApp() {
+            const now = new Date();
+            const currentHours = now.getHours();
+            const currentMinutes = now.getMinutes();
+            const currentSeconds = now.getSeconds();
+            const currentTotalSeconds = currentHours * 3600 + currentMinutes * 60 + currentSeconds;
+
+            // Reloj en vivo
+            document.getElementById('liveClock').innerText = 
+                String(currentHours).padStart(2, '0') + ':' +
+                String(currentMinutes).padStart(2, '0') + ':' +
+                String(currentSeconds).padStart(2, '0');
+
+            // Fecha formateada
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('dateDisplay').innerText = now.toLocaleDateString('es-ES', options);
+
+            const list = schedules[currentRoute];
+            let nextBus = null;
+            let nextBusSeconds = null;
+
+            // Encontrar el próximo autobús
+            for (let time of list) {
+                const [h, m] = time.split(':').map(Number);
+                const busTotalSeconds = h * 3600 + m * 60;
+                if (busTotalSeconds > currentTotalSeconds) {
+                    nextBus = time;
+                    nextBusSeconds = busTotalSeconds;
+                    break;
+                }
+            }
+
+            const nextTimeDisplay = document.getElementById('nextTimeDisplay');
+            const countdownDisplay = document.getElementById('countdownDisplay');
+
+            if (nextBus) {
+                nextTimeDisplay.innerText = nextBus;
+                const diffSeconds = nextBusSeconds - currentTotalSeconds;
+                const diffHours = Math.floor(diffSeconds / 3600);
+                const diffMinutes = Math.floor((diffSeconds % 3600) / 60);
+                const diffSecs = diffSeconds % 60;
+
+                let countdownText = "Sale en: ";
+                if (diffHours > 0) countdownText += `${diffHours}h `;
+                if (diffMinutes > 0 || diffHours > 0) countdownText += `${diffMinutes}m `;
+                countdownText += ${diffSecs}s;
+                
+                countdownDisplay.innerText = countdownText;
+            } else {
+                nextTimeDisplay.innerText = "Finalizado";
+                countdownDisplay.innerText = "No hay más salidas hoy";
+            }
+
+            // Renderizar la parrilla de horarios
+            const grid = document.getElementById('scheduleGrid');
+            grid.innerHTML = '';
+            
+            list.forEach(time => {
+                const [h, m] = time.split(':').map(Number);
+                const busTotalSeconds = h * 3600 + m * 60;
+                
+                const item = document.createElement('div');
+                item.className = 'schedule-item';
+                item.innerText = time;
+
+                if (time === nextBus) {
+                    item.classList.add('highlight');
+                } else if (busTotalSeconds < currentTotalSeconds) {
+                    item.classList.add('passed');
+                }
+
+                grid.appendChild(item);
+            });
+        }
+
+        setInterval(updateApp, 1000);
+        updateApp();
+    </script>
+</body>
+</html>
